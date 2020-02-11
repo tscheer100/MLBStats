@@ -1,9 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+import os
+
+if os.path.isdir('.\AL'):
+    with open(os.getcwd() + '\\AL\\AL_Home_Runs.txt', "w") as r:
+        r.write("check passed")
+    print("File created in the AL folder")
+else:
+    try:
+        os.mkdir('.\AL')
+    except Exception as e:
+        print("[FATAL ERROR]", e)
+    else:
+        with open(os.getcwd() + '\\AL\\AL_Home_Runs.txt', "w") as r:
+            r.write("check passed")
+        print("File created in the AL folder")
+
 
 #write header of data
-with open('AL_Home_runs.txt', 'w') as r:
+with open(os.getcwd() + '\\AL\\AL_Home_Runs.txt', 'w') as r:
     r.write('Pitcher Statistics by Ranking.\n\n')
 
 num = 1
@@ -21,7 +37,7 @@ while num <= 500:
         soup = BeautifulSoup(res.content, 'html.parser')
         stats = soup.find('table', class_='tablehead')
         # saves the table into a text file.
-        with open('AL_Home_runs.txt', 'a') as r:
+        with open(os.getcwd() + '\\AL\\AL_Home_Runs.txt', 'a') as r:
             for row in stats.find_all('tr'):
                 for cell in row.find_all('td'):
                     # Gets rid of "Sortable Batting" every once in a while.
