@@ -7,25 +7,43 @@ from bs4 import BeautifulSoup
 
 pathName = os.getcwd()
 print("The current working directory is %s" % pathName)
-def set():
-    if os.path.isdir('.\Data'):
-        with open(os.getcwd() + '.\Data\AL_Batting_Stats.txt', "w") as r:
-            r.write("check passed")
-        print("File created in the AL\Data folder")
-    else:
-        try:
-            os.mkdir('.\Data')
-        except Exception as e:
-            print("[FATAL ERROR]", e)
-        else:
-            with open(os.getcwd() + '.\Data\AL_Batting_Stats.txt', "w") as r:
+
+def directories():
+    if pathName == r"C:\Users\Turtle\PycharmProjects\MLBStats\AL":
+        if os.path.isdir('.\Data'):
+            with open(os.path.join(os.getcwd(), 'Data\AL_Batting_Stats.txt'), "w") as r:
                 r.write("check passed")
             print("File created in the AL\Data folder")
+        else:
+            try:
+                os.mkdir('.\Data')
+            except Exception as e:
+                print("[FATAL ERROR]", e)
+            else:
+                with open(os.path.join(os.getcwd(), '\Data\AL_Batting_Stats.txt'), "w") as r:
+                    r.write("check passed")
+                print("File created in the AL\Data folder")
+    else:
+        if os.path.isdir('.\AL\Data'):
+            with open(os.path.join(os.getcwd(), 'AL\Data\AL_Batting_Stats.txt'), "w") as r:
+                r.write("check passed")
+            print("File created in the AL\Data folder")
+        else:
+            try:
+                os.mkdir('.\AL\Data')
+            except Exception as e:
+                print("[FATAL ERROR]", e)
+            else:
+                with open(os.path.join(os.getcwd(), 'AL\Data\AL_Batting_Stats.txt'), "w") as r:
+                    r.write("check passed")
+                print("File created in the AL\Data folder")
+
+directories()
 
 
 #write header of data
 def HeaderData():
-    with open(os.getcwd() + '.\Data\AL_Batting_Stats.txt', 'w') as r:
+    with open(os.path.join(os.getcwd(), 'AL\Data\AL_Batting_Stats.txt'), 'w') as r:
         r.write('Batting Statistics by Player Ranking in the American Leage')
 HeaderData()
 
@@ -35,14 +53,14 @@ headers ={'User-Agent' : 'Mozilla/5.0'}
 #go through each page until reaching 100th batter, even if non existant.
 def get():
     num = 1
-    while num <= 200:
+    while num <= 4000:
         url = 'http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false'.format(num)
         res = requests.get(url, headers)
         time.sleep(1)
         if res.status_code == 200:
             soup = BeautifulSoup(res.content, 'html.parser')
             stats = soup.find('table', class_='tablehead')
-            with open(os.getcwd() + '.\Data\AL_Batting_Stats.txt', 'a') as r:
+            with open(os.path.join(os.getcwd(), 'AL\Data\AL_Batting_Stats.txt'), 'a') as r:
                 for row in stats.find_all('tr'):
                     for cell in row.find_all('td'):
                         # Gets rid of "Sortable Batting" every once in a while.
@@ -57,8 +75,8 @@ def get():
 
         num+=40
 
-def stats():
-    set()
-    get()
 
-stats()
+
+
+#uncomment the command below if running file directly
+get()
