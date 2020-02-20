@@ -19,3 +19,10 @@ You may also run the files directly within the folder to retrieve specific stati
  [like so]
 
  ![](https://cdn.discordapp.com/attachments/526891145733603339/677998766850310167/unknown.png)
+ 
+ #### What I've learned from this project
+ - Familizarized myself with BeautifulSoup and how to use it with HTML tags
+ - dipped my toe into the built-in time function in Python
+ - dipped my toe into the request method
+ - Experienced pathlib and os and aquainted myself with the advantages of using each and their compatibility with linux vs windows
+ - Aquainted myself with debugging encoding errors in Python
