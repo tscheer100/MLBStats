@@ -1,8 +1,8 @@
-#standard libraries
+# standard libraries
 import time
-import os
 from pathlib import Path
-#third party libraries
+
+# third party libraries
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,73 +13,78 @@ from bs4 import BeautifulSoup
 # print(pathStr)
 # print(Path.cwd().parts[-1])
 
-#tricks website into thinking a legit browser is being used as not to throw an error
-headers ={'User-Agent' : 'Mozilla/5.0'}
+# add log
 
-def isRoot(): #https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
-    if Path.cwd().parts[-1] == "MLBStats":
-        return True
-    else:
-        return False
+# tricks website into thinking a legit browser is being used as not to throw an error
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+
+def isRoot():  # https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
+    return Path.cwd().parts[-1] == "MLBStats"
+
 
 def directory():
     if isRoot():
-        if Path('AL/Data').exists():
+        if Path("AL/Data").exists():
             print("AL/Data folder Already exists")
         else:
-            Path('AL/Data').mkdir()
+            Path("AL/Data").mkdir()
             print("Created folder AL/Data")
     else:
-        if Path('Data').exists():
+        if Path("Data").exists():
             print("Data folder already exists, skipping creation")
         else:
-            Path('Data').mkdir()
+            Path("Data").mkdir()
             print("Created folder Data")
+
+
 directory()
+
 
 def setTxt():
     if isRoot():
-        txt = 'AL/Data/AL_Batting_Stats.txt'
+        txt = "AL/Data/AL_Batting_Stats.txt"
     else:
-        txt = 'Data/AL_Batting_Stats.txt'
+        txt = "Data/AL_Batting_Stats.txt"
     return txt
 
 
 def getStats():
     with open(setTxt(), "w") as r:
-        r.write('Batting Statistics by Player Ranking in the American Leage')
+        r.write("Batting Statistics by Player Ranking in the American Leage")
     print("File created in the AL\Data folder")
 
-    for x in range(0, 500,40):
-        url = 'http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false'.format(x)
+    for x in range(0, 500, 40):
+        url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(
+            x
+        )
         res = requests.get(url, headers)
         time.sleep(0.05)
 
         # check if website returns correctly
         if res.status_code == 200:
-            soup = BeautifulSoup(res.content, 'html.parser')
-            stats = soup.find('table', class_='tablehead')
+            soup = BeautifulSoup(res.content, "html.parser")
+            stats = soup.find("table", class_="tablehead")
 
             # finds all elements in table and puts it in txt file
-            with open(setTxt(), 'a') as r:
-                for row in stats.find_all('tr'):
-                    for cell in row.find_all('td'):
+            with open(setTxt(), "a") as r:
+                for row in stats.find_all("tr"):
+                    for cell in row.find_all("td"):
                         # Gets rid of "Sortable Batting" every once in a while.
-                        if cell.text == 'Sortable Batting':
+                        if cell.text == "Sortable Batting":
                             pass
                         else:
                             r.write(cell.text.ljust(25))
-                    r.write('\n')
+                    r.write("\n")
         else:
             print("no response")
             print(x)
 
         # skip 40 players to go to next page
-        x+=40
+        x += 40
 
 
 getStats()
-
 
 # for begin, this was my old code before you helped me.
 
@@ -117,11 +122,6 @@ def directories():
                     r.write("check passed")
                 print("File created in the AL\Data folder")
 """
-
-
-
-
-
 
 """
 #go through each page until reaching 100th batter, even if non existant.
