@@ -58,7 +58,7 @@ def getStats():
         url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(
             x
         )
-        res = requests.get(url, headers)
+        res = requests.get(url, HEADERS)
         time.sleep(0.05)
 
         # check if website returns correctly
