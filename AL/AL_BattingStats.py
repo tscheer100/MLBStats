@@ -6,52 +6,29 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 
-# debug stuff
-
-# pathStr = "%s" %  Path.cwd()
-# print("The current working directory is ")
-# print(pathStr)
-# print(Path.cwd().parts[-1])
-
-# add log
-
 # tricks website into thinking a legit browser is being used as not to throw an error
 HEADERS = {"User-Agent": "Mozilla/5.0"}
+txt = ""
 
 
-def isRoot():  # https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
+def is_root():  # https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
     return Path.cwd().parts[-1] == "MLBStats"
 
 
 def directory():
-    if isRoot():
-        if Path("AL/Data").exists():
-            print("AL/Data folder Already exists")
-        else:
-            Path("AL/Data").mkdir()
-            print("Created folder AL/Data")
-    else:
-        if Path("Data").exists():
-            print("Data folder already exists, skipping creation")
-        else:
-            Path("Data").mkdir()
-            print("Created folder Data")
+    global txt
 
-
-directory()
-
-
-def setTxt():
-    if isRoot():
+    if is_root():
+        Path("AL/Data").mkdir()
         txt = "AL/Data/AL_Batting_Stats.txt"
     else:
+        Path("Data").mkdir()
         txt = "Data/AL_Batting_Stats.txt"
-    return txt
 
 
 def getStats():
-    with open(setTxt(), "w") as r:
-        r.write("Batting Statistics by Player Ranking in the American Leage")
+    with open(txt, "w") as r:
+        r.write("Batting Statistics by Player Ranking in the American League")
     print("File created in the AL\Data folder")
 
     for x in range(0, 500, 40):
@@ -67,7 +44,7 @@ def getStats():
             stats = soup.find("table", class_="tablehead")
 
             # finds all elements in table and puts it in txt file
-            with open(setTxt(), "a") as r:
+            with open(txt, "a") as r:
                 for row in stats.find_all("tr"):
                     for cell in row.find_all("td"):
                         # Gets rid of "Sortable Batting" every once in a while.
@@ -84,7 +61,13 @@ def getStats():
         x += 40
 
 
-getStats()
+def setup():
+    directory()
+    getStats()
+
+
+if __name__ == "__main__":
+    setup()
 
 # for begin, this was my old code before you helped me.
 
@@ -121,10 +104,8 @@ def directories():
                 with open(os.path.join(os.getcwd(), 'AL\Data\AL_Batting_Stats.txt'), "w") as r:
                     r.write("check passed")
                 print("File created in the AL\Data folder")
-"""
 
-"""
-#go through each page until reaching 100th batter, even if non existant.
+#go through each page until reaching 500th batter, even if non existant.
 def get():
     num = 1
     while num <= 500:
