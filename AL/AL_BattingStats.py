@@ -18,23 +18,24 @@ def is_root():  # https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
 def directory():
     global txt
 
-    if is_root():
-        Path("AL/Data").mkdir()
-        txt = "AL/Data/AL_Batting_Stats.txt"
-    else:
-        Path("Data").mkdir()
-        txt = "Data/AL_Batting_Stats.txt"
+    dir_path = 'AL/Data' if is_root() else 'Data'
+
+    try:
+        Path(dir_path).mkdir()
+        print(f"created {dir_path}")
+    except Exception as e:
+        print(e)
+
+    txt = f"{dir_path}/AL_Batting_Stats.txt"
 
 
-def getStats():
+def get_stats():
     with open(txt, "w") as r:
         r.write("Batting Statistics by Player Ranking in the American League")
     print("File created in the AL\Data folder")
 
     for x in range(0, 500, 40):
-        url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(
-            x
-        )
+        url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(x)
         res = requests.get(url, HEADERS)
         time.sleep(0.05)
 
@@ -63,7 +64,7 @@ def getStats():
 
 def setup():
     directory()
-    getStats()
+    get_stats()
 
 
 if __name__ == "__main__":
