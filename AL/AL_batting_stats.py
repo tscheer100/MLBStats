@@ -11,14 +11,10 @@ HEADERS = {"User-Agent": "Mozilla/5.0"}
 txt = ""
 
 
-def is_root():  # https://files.gamebanana.com/img/ico/sprays/5a19d20765d97.gif
-    return Path.cwd().parts[-1] == "MLBStats"
-
-
-def directory():
+def setup_path():
     global txt
 
-    dir_path = 'AL/Data' if is_root() else 'Data'
+    dir_path = "AL/Data" if Path.cwd().parts[-1] == "MLBStats" else "Data"
 
     try:
         Path(dir_path).mkdir()
@@ -30,8 +26,8 @@ def directory():
 
 
 def get_stats():
-    with open(txt, "w") as r:
-        r.write("Batting Statistics by Player Ranking in the American League")
+    with open(txt, "w") as f:
+        f.write("Batting Statistics by Player Ranking in the American League")
     print("File created in the AL\Data folder")
 
     for x in range(0, 500, 40):
@@ -39,31 +35,27 @@ def get_stats():
         res = requests.get(url, HEADERS)
         time.sleep(0.05)
 
-        # check if website returns correctly
         if res.status_code == 200:
             soup = BeautifulSoup(res.content, "html.parser")
             stats = soup.find("table", class_="tablehead")
 
-            # finds all elements in table and puts it in txt file
-            with open(txt, "a") as r:
+            with open(txt, "a") as f:
                 for row in stats.find_all("tr"):
                     for cell in row.find_all("td"):
                         # Gets rid of "Sortable Batting" every once in a while.
                         if cell.text == "Sortable Batting":
                             pass
                         else:
-                            r.write(cell.text.ljust(25))
-                    r.write("\n")
+                            f.write(cell.text.ljust(25))
+                    f.write("\n")
         else:
             print("no response")
             print(x)
 
-        # skip 40 players to go to next page
-        x += 40
 
 
 def setup():
-    directory()
+    setup_path()
     get_stats()
 
 
