@@ -14,15 +14,17 @@ txt = ""
 def setup_path():
     global txt
 
-    dir_path = "AL/Data" if Path.cwd().parts[-1] == "MLBStats" else "Data"
-
+    dir_path = Path(__file__).parent / "Data"
     try:
-        Path(dir_path).mkdir()
-        print(f"created {dir_path}")
+        dir_path.mkdir(exist_ok= True)
     except Exception as e:
-        print(e)
+        if e is "FileExistsError":
+            pass
+        else:
+            print(e)
 
-    txt = f"{dir_path}/AL_Batting_Stats.txt"
+    txt = f"{dir_path}\AL_Batting_Stats.txt"
+    print(txt)
 
 
 def get_stats():
@@ -30,12 +32,14 @@ def get_stats():
         f.write("Batting Statistics by Player Ranking in the American League")
     print("File created in the AL\Data folder")
 
-    for x in range(0, 500, 40):
+    max_num_players = 500
+    players_per_page = 40
+    for x in range(0, max_num_players, players_per_page):
+        time.sleep(0.05)
         url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(x)
         res = requests.get(url, HEADERS)
-        time.sleep(0.05)
 
-        if res.status_code == 200:
+        if res.status_code == requests.codes.ok:
             soup = BeautifulSoup(res.content, "html.parser")
             stats = soup.find("table", class_="tablehead")
 
@@ -44,14 +48,12 @@ def get_stats():
                     for cell in row.find_all("td"):
                         # Gets rid of "Sortable Batting" every once in a while.
                         if cell.text == "Sortable Batting":
-                            pass
-                        else:
-                            f.write(cell.text.ljust(25))
+                            continue
+                        f.write(cell.text.ljust(25))
                     f.write("\n")
         else:
             print("no response")
             print(x)
-
 
 
 def setup():
@@ -62,7 +64,7 @@ def setup():
 if __name__ == "__main__":
     setup()
 
-# for begin, this was my old code before you helped me.
+# for begin and Strager, this was my old code before you helped me.
 
 """
 pathName = os.getcwd()
