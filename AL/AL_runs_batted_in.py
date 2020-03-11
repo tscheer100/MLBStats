@@ -1,54 +1,57 @@
 #standard libraries
 import time
-import os
+from pathlib import Path
 #third party libraries
 import requests
 from bs4 import BeautifulSoup
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+txt = ""
 
-if os.path.isdir('.\Data'):
-    with open(os.getcwd() + '.\Data\AL_Runs_Batted_in.txt', "w") as r:
-        r.write("check passed")
+
+def setup_path():
+    global txt
+
+    dir_path = Path(__file__).parent / "Data"
+    dir_path.mkdir(exist_ok=True)
+
+    txt = f"{dir_path}\AL_runs_batted_in.txt"
+
+
+
+
+
+def get_stats():
+    with open(txt, "w") as f:
+        f.write('Players Ranked by Home Runs Batted In Within the American League')
     print("File created in the AL\Data folder")
-else:
-    try:
-        os.mkdir('.\AL')
-    except Exception as e:
-        print("[FATAL ERROR]", e)
-    else:
-        with open(os.getcwd() + '.\Data\AL_Runs_Batted_in.txt', "w") as r:
-            r.write("check passed")
-        print("File created in the AL\Data folder")
 
-num = 1
+    max_num_players = 500
+    players_per_page = 40
+    for x in range(0, max_num_players, players_per_page):
+        time.sleep(0.05)
+        url = "http://www.espn.com/mlb/stats/batting/_/league/al/sort/RBIs/count/{}/qualified/false".format(x)
+        res = requests.get(url, HEADERS)
 
-headers = {'User-Agent' : 'Mozilla/5.0'}\
+        if res.status_code == requests.codes.ok:
+            soup = BeautifulSoup(res.content, "html.parser")
+            stats = soup.find("table", class_="tablehead")
 
-#Writes the header of the data
-def HeaderData():
-    with open(os.getcwd() + '.\Data\AL_Runs_Batted_in.txt', 'w') as r:
-        r.write('Players Ranked by Home Runs Batted In Within the American League')
-HeaderData()
+            with open(txt, "a") as f:
+                for row in stats.find_all("tr"):
+                    for cell in row.find_all("td"):
+                        # Gets rid of "Sortable Batting" every once in a while.
+                        if cell.text == "Sortable Batting":
+                            continue
+                        f.write(cell.text.ljust(25))
+                    f.write("\n")
+        else:
+            print("no response")
+            print(x)
+
+def setup():
+    setup_path()
+    get_stats()
 
 
-while num <= 450:
-    url = 'http://www.espn.com/mlb/stats/batting/_/league/al/sort/RBIs/count/{}/qualified/false'.format(num)
-    res = requests.get(url, headers)
-    time.sleep(1)
-    if res.status_code ==200:
-        soup = BeautifulSoup(res.content, 'html.parser')
-        stats = soup.find('table', class_='tablehead')
-        with open(os.getcwd() + '.\Data\AL_Runs_Batted_in.txt', 'a') as r:
-            for rows in stats.find_all('tr'):
-                for cell in rows.find_all('td'):
-                    #Gets rid of "Sortable Batting" every once in a while.
-                    if cell.text == 'Sortable Batting':
-                        pass
-                    else:
-                        r.write(cell.text.ljust(22))
-                r.write('\n')
-    else:
-        print("no response")
-        print(num)
-
-    num+=40
-
+if __name__ == "__main__":
+    setup()

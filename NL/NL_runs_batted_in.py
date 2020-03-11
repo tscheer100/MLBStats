@@ -16,19 +16,19 @@ def setup_path():
     dir_path = Path(__file__).parent / "Data"
     dir_path.mkdir(exist_ok=True)
 
-    txt = f"{dir_path}\AL_wins_above_replacement.txt"
+    txt = f'{dir_path}/NL_runs_batted_in.txt'
 
 
 def get_stats():
     with open(txt, "w") as f:
-        f.write("wins above replacement by Player Ranking in the American League")
-    print("File created in the AL\Data folder")
+        f.write("Earned run average by Player Ranking in the National League")
+    print("File created in the NL\Data folder")
 
-    max_num_players = 500
+    max_num_players = 600
     players_per_page = 40
     for x in range(0, max_num_players, players_per_page):
         time.sleep(0.05)
-        url = "http://www.espn.com/mlb/stats/batting/_/league/al/sort/WARBR/count/{}/qualified/false".format(x)
+        url = "http://www.espn.com/mlb/stats/batting/_/league/nl/sort/RBIs/count/{}/qualified/false".format(x)
         res = requests.get(url, HEADERS)
 
         if res.status_code == requests.codes.ok:

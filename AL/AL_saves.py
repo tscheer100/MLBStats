@@ -1,52 +1,58 @@
 #standard libraries
 import time
-import os
+from pathlib import Path
 #third party libraries
 import requests
 from bs4 import BeautifulSoup
 
-if os.path.isdir('.\Data'):
-    with open(os.getcwd() + '.\Data\AL_Saves.txt', "w") as r:
-        r.write("check passed")
+# tricks website into thinking a legit browser is being used as not to throw an error
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+txt = ""
+
+
+def setup_path():
+    global txt
+
+    dir_path = Path(__file__).parent / "Data"
+    dir_path.mkdir(exist_ok=True)
+
+    txt = f"{dir_path}\AL_saves.txt"
+
+
+
+def get_stats():
+    with open(txt, "w") as f:
+        f.write("Saves by Player Ranking in the American League")
     print("File created in the AL\Data folder")
-else:
-    try:
-        os.mkdir('.\AL')
-    except Exception as e:
-        print("[FATAL ERROR]", e)
-    else:
-        with open(os.getcwd() + '.\Data\AL_Saves.txt', "w") as r:
-            r.write("check passed")
-        print("File created in the AL\Data folder")
-num = 1
 
-headers = {'User-Agent' : 'Mozilla/5.0'}
+    max_num_players = 500
+    players_per_page = 40
+    for x in range(0, max_num_players, players_per_page):
+        time.sleep(0.05)
+        url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(x)
+        res = requests.get(url, HEADERS)
 
-#Writes the header of the data
-def HeaderData():
-    with open (os.getcwd() + '.\Data\AL_Saves.txt', 'w') as r:
-        r.write('Ranks players by number of saves in the American League')
-HeaderData()
+        if res.status_code == requests.codes.ok:
+            soup = BeautifulSoup(res.content, "html.parser")
+            stats = soup.find("table", class_="tablehead")
 
-while num <= 500:
-    url = 'http://www.espn.com/mlb/stats/pitching/_/league/al/sort/saves/count/{}/qualified/false'.format(num)
-    res = requests.get(url, headers)
-    time.sleep(1)
-    if res.status_code == 200:
-        soup = BeautifulSoup(res.content, 'html.parser')
-        stats = soup.find()
-        with open(os.getcwd() + '.\Data\AL_Saves.txt', 'a') as r:
-            for rows in stats.find_all('tr'):
-                for cell in rows.find_all('td'):
-                    # Gets rid of "Sortable Pitching" every once in a while.
-                    if cell.text == 'Sortable Pitching':
-                        pass
-                    else:
-                        r.write(cell.text.ljust(20))
-                r.write('\n')
+            with open(txt, "a") as f:
+                for row in stats.find_all("tr"):
+                    for cell in row.find_all("td"):
+                        # Gets rid of "Sortable Batting" every once in a while.
+                        if cell.text == "Sortable Batting":
+                            continue
+                        f.write(cell.text.ljust(25))
+                    f.write("\n")
+        else:
+            print("no response")
+            print(x)
 
-    else:
-        print("no response")
-        print(num)
 
-    num += 40
+def setup():
+    setup_path()
+    get_stats()
+
+
+if __name__ == "__main__":
+    setup()

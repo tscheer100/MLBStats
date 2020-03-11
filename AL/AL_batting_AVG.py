@@ -1,6 +1,7 @@
 # standard libraries
 import time
 from pathlib import Path
+
 # third party libraries
 import requests
 from bs4 import BeautifulSoup
@@ -16,19 +17,19 @@ def setup_path():
     dir_path = Path(__file__).parent / "Data"
     dir_path.mkdir(exist_ok=True)
 
-    txt = f"{dir_path}\AL_wins_above_replacement.txt"
+    txt = f"{dir_path}\AL_Batting_AVG.txt"
 
 
 def get_stats():
     with open(txt, "w") as f:
-        f.write("wins above replacement by Player Ranking in the American League")
+        f.write("Batting Statistics by Player Ranking in the American League")
     print("File created in the AL\Data folder")
 
     max_num_players = 500
     players_per_page = 40
     for x in range(0, max_num_players, players_per_page):
         time.sleep(0.05)
-        url = "http://www.espn.com/mlb/stats/batting/_/league/al/sort/WARBR/count/{}/qualified/false".format(x)
+        url = "http://www.espn.com/mlb/stats/batting/_/league/al/count/{}/qualified/false".format(x)
         res = requests.get(url, HEADERS)
 
         if res.status_code == requests.codes.ok:
@@ -47,6 +48,7 @@ def get_stats():
             print("no response")
             print(x)
 
+
 def setup():
     setup_path()
     get_stats()
@@ -54,3 +56,5 @@ def setup():
 
 if __name__ == "__main__":
     setup()
+
+# for begin and Strager, this was my old code before you helped me.

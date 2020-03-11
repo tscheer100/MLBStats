@@ -16,13 +16,13 @@ def setup_path():
     dir_path = Path(__file__).parent / "Data"
     dir_path.mkdir(exist_ok=True)
 
-    txt = f"{dir_path}\AL_wins_above_replacement.txt"
+    txt = f'{dir_path}/NL_batting_AVG.txt'
 
 
 def get_stats():
     with open(txt, "w") as f:
-        f.write("wins above replacement by Player Ranking in the American League")
-    print("File created in the AL\Data folder")
+        f.write("wins above replacement by Player Ranking in the National League")
+    print("File created in the NL\Data folder")
 
     max_num_players = 500
     players_per_page = 40
