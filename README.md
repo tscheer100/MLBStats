@@ -9,7 +9,7 @@ This project was designed to retrieve a set of data in the MLB from the ESPN web
 - must have Bs4 installed by typing **pip install bs4** into your command prompt
 
 # How to use MLB Stats
-To use MLB Stats, simply run the relevant .py file. For example, in PyCharm, to run all of the
+To use MLB Stats, run the relevant .py file. For example, in PyCharm, to run all of the
 statistics within the American League, like so.
 
 ![](https://cdn.discordapp.com/attachments/526891145733603339/677998191106326540/unknown.png)
